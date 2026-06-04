@@ -1,0 +1,118 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  background: linear-gradient(160deg, #0a2e14 0%, #0f4d22 50%, #1a7a38 100%);
+  font-family: 'Cinzel', serif;
+  color: #e8f5e9;
+}
+
+/* --- BARRE GAUCHE --- */
+
+#barre-gauche {
+  width: 220px;
+  min-height: 100vh;
+  background-color: #061a0d;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 40px 16px;
+  gap: 12px;
+  border-right: 1px solid #2bff6333;
+  flex-shrink: 0;
+}
+
+#barre-gauche button {
+  background: transparent;
+  border: 1px solid #2bff6355;
+  color: #a8f0bc;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, color 0.2s;
+}
+
+#barre-gauche button:hover {
+  background: #2bff6322;
+  color: #2bff63;
+}
+
+/* --- PRESENTATION --- */
+
+#presentation {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+#presentation h1 {
+  font-size: 64px;
+  font-weight: 700;
+  color: #2bff63;
+  letter-spacing: 6px;
+  margin-bottom: 24px;
+  text-shadow: 0 0 40px #2bff6355;
+}
+
+#presentation p {
+  font-size: 16px;
+  color: #a8f0bc;
+  max-width: 480px;
+  line-height: 1.8;
+  margin-bottom: 40px;
+}
+
+/* --- BOUTONS ACTIONS --- */
+
+#actions {
+  display: flex;
+  gap: 16px;
+}
+
+#btn-creer {
+  background: #2bff63;
+  color: #061a0d;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#btn-creer:hover {
+  background: #1de055;
+  transform: scale(1.03);
+}
+
+#btn-connexion {
+  background: transparent;
+  color: #2bff63;
+  border: 1px solid #2bff63;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  padding: 14px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#btn-connexion:hover {
+  background: #2bff6315;
+  transform: scale(1.03);
+}

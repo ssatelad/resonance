@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance — Profil</title>
+    <link rel="stylesheet" href="profil.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav id="barre-gauche">
+        <button id="accueil">Accueil</button>
+        <button id="profil">Profil</button>
+        <button id="musique-fond">Musique</button>
+        <button id="personnalisation">Personnalisation</button>
+    </nav>
+
+    <div id="contenu">
+
+        <div id="entete-profil">
+            <img id="photo-profil" src="" alt="Photo de profil">
+            <div id="infos-profil">
+                <p id="pseudo">tonpseudo</p>
+                <div id="stats">
+                    <span><strong>0</strong> musiques</span>
+                    <span><strong>0</strong> collections</span>
+                    <span><strong>0</strong> likes reçus</span>
+                </div>
+                <p id="bio">Ta bio ici.</p>
+                <div id="actions-profil">
+                    <button id="btn-modifier">Modifier le profil</button>
+                    <button id="btn-partager">Partager</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="onglets">
+            <button id="btn-postes" class="onglet-actif">Postes</button>
+            <button id="btn-identifications">Identifications</button>
+            <button id="btn-collections">Collections</button>
+        </div>
+
+        <div id="contenu-onglet">
+
+            <div id="barre-options">
+                <div id="toggle-affichage">
+                    <button id="btn-grille">⊞ Grille</button>
+                    <button id="btn-liste">≡ Liste</button>
+                </div>
+            </div>
+
+            <div id="zone-musiques">
+                <!-- les musiques s'afficheront ici via le JS -->
+            </div>
+
+        </div>
+
+    </div>
+    <script type="module" src="profil.js"></script>
+</body>
+</html>

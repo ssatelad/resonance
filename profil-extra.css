@@ -1,0 +1,262 @@
+/* --- CARTE MUSIQUE --- */
+
+.carte-musique {
+  background: #061a0dcc;
+  border: 1px solid #2bff6333;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, border 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.carte-musique:hover {
+  transform: translateY(-4px);
+  border-color: #2bff6366;
+}
+
+.carte-musique img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.collection-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  background: #0a2e1a;
+}
+
+.musique-info {
+  padding: 10px 12px;
+}
+
+.musique-titre {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e8f5e9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.musique-source {
+  font-size: 11px;
+  color: #a8f0bc;
+  margin-top: 4px;
+}
+
+/* --- LISTE MODE --- */
+
+#zone-musiques.liste {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#zone-musiques.liste .carte-musique {
+  flex-direction: row;
+  align-items: center;
+  height: 64px;
+}
+
+#zone-musiques.liste .carte-musique img {
+  width: 64px;
+  height: 64px;
+  aspect-ratio: auto;
+  flex-shrink: 0;
+}
+
+#zone-musiques.liste .collection-cover {
+  width: 64px;
+  height: 64px;
+  aspect-ratio: auto;
+  flex-shrink: 0;
+  font-size: 24px;
+}
+
+/* --- MINI PLAYER --- */
+
+#mini-player {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #061a0d;
+  border: 1px solid #2bff6344;
+  border-radius: 12px;
+  padding: 12px;
+  z-index: 1000;
+  min-width: 340px;
+  box-shadow: 0 8px 32px #00000066;
+}
+
+#player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #a8f0bc;
+}
+
+#fermer-player {
+  background: transparent;
+  border: none;
+  color: #a8f0bc;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#fermer-player:hover {
+  color: #2bff63;
+}
+
+/* --- MODALE --- */
+
+#modale {
+  position: fixed;
+  inset: 0;
+  background: #00000088;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+#modale-contenu {
+  background: #061a0d;
+  border: 1px solid #2bff6333;
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#modale-contenu h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2bff63;
+  letter-spacing: 3px;
+}
+
+#modale-contenu .champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#modale-contenu label {
+  font-size: 12px;
+  color: #a8f0bc;
+  letter-spacing: 1px;
+}
+
+#modale-contenu input {
+  background: #0a2e1a;
+  border: 1px solid #2bff6344;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #e8f5e9;
+  outline: none;
+  transition: border 0.2s;
+}
+
+#modale-contenu input:focus {
+  border-color: #2bff63;
+}
+
+#modale-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+#btn-valider-musique,
+#btn-valider-modifier {
+  background: #2bff63;
+  color: #061a0d;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#btn-valider-musique:hover,
+#btn-valider-modifier:hover {
+  background: #1de055;
+}
+
+#btn-fermer-modale {
+  background: transparent;
+  border: 1px solid #2bff6333;
+  color: #a8f0bc;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#btn-fermer-modale:hover {
+  background: #2bff6315;
+}
+
+/* --- BOUTONS TOGGLE ACTIF --- */
+
+#toggle-affichage button.actif {
+  background: #2bff6322;
+  color: #2bff63;
+  border-color: #2bff63;
+}
+
+/* --- BOUTON DÉCONNEXION --- */
+
+#btn-deconnexion {
+  background: transparent;
+  border: 1px solid #ff4444;
+  color: #ff4444;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#btn-deconnexion:hover {
+  background: #ff444415;
+}
+
+/* --- BOUTON AJOUTER MUSIQUE --- */
+
+#btn-ajouter-musique {
+  background: #2bff63;
+  color: #061a0d;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#btn-ajouter-musique:hover {
+  background: #1de055;
+}

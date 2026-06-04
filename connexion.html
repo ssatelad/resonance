@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance — Connexion</title>
+    <link rel="stylesheet" href="connexionstyle.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav id="barre-gauche">
+        <button id="accueil">Accueil</button>
+        <button id="profil">Profil</button>
+        <button id="musique-fond">Musique</button>
+        <button id="personnalisation">Personnalisation</button>
+    </nav>
+
+    <div id="contenu">
+        <div id="carte-connexion">
+            <h1>Connexion</h1>
+            <p id="sous-titre">Content de te revoir.</p>
+
+            <button id="btn-google">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" height="20">
+                Continuer avec Google
+            </button>
+
+            <div id="separateur">
+                <span></span>
+                <p>ou</p>
+                <span></span>
+            </div>
+
+            <div id="formulaire">
+                <div class="champ">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="ton@email.com">
+                </div>
+                <div class="champ">
+                    <label for="mdp">Mot de passe</label>
+                    <input type="password" id="mdp" placeholder="••••••••">
+                </div>
+                <button id="btn-connexion">Se connecter</button>
+            </div>
+
+            <p id="lien-inscription">Pas encore de compte ? <a href="inscription.html">Créer un profil</a></p>
+        </div>
+    </div>
+    <script type="module" src="connexion.js"></script>
+</body>
+</html>

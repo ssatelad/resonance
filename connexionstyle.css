@@ -1,0 +1,201 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: row;
+    background: linear-gradient(160deg, #0a2e14 0%, #0f4d22 50%, #1a7a38 100%);
+    font-family: 'Cinzel', serif;
+    color: #e8f5e9;
+}
+
+/* --- BARRE GAUCHE --- */
+
+#barre-gauche {
+    width: 220px;
+    min-height: 100vh;
+    background-color: #061a0d;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 40px 16px;
+    gap: 12px;
+    border-right: 1px solid #2bff6333;
+    flex-shrink: 0;
+}
+
+#barre-gauche button {
+    background: transparent;
+    border: 1px solid #2bff6355;
+    color: #a8f0bc;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s, color 0.2s;
+}
+
+#barre-gauche button:hover {
+    background: #2bff6322;
+    color: #2bff63;
+}
+
+/* --- CONTENU --- */
+
+#contenu {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+#carte-connexion {
+    background: #061a0dcc;
+    border: 1px solid #2bff6333;
+    border-radius: 16px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#carte-connexion h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2bff63;
+    letter-spacing: 4px;
+    text-align: center;
+}
+
+#sous-titre {
+    font-size: 13px;
+    color: #a8f0bc;
+    text-align: center;
+}
+
+/* --- BOUTON GOOGLE --- */
+
+#btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #ffffff;
+    color: #1a1a1a;
+    border: none;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+#btn-google:hover {
+    background: #f0f0f0;
+    transform: scale(1.02);
+}
+
+/* --- SEPARATEUR --- */
+
+#separateur {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#separateur span {
+    flex: 1;
+    height: 1px;
+    background: #2bff6333;
+}
+
+#separateur p {
+    font-size: 12px;
+    color: #a8f0bc;
+}
+
+/* --- FORMULAIRE --- */
+
+#formulaire {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.champ {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.champ label {
+    font-size: 12px;
+    color: #a8f0bc;
+    letter-spacing: 1px;
+}
+
+.champ input {
+    background: #0a2e1a;
+    border: 1px solid #2bff6344;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: #e8f5e9;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.champ input:focus {
+    border-color: #2bff63;
+}
+
+.champ input::placeholder {
+    color: #a8f0bc55;
+}
+
+#btn-connexion {
+    background: #2bff63;
+    color: #061a0d;
+    border: none;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 4px;
+}
+
+#btn-connexion:hover {
+    background: #1de055;
+    transform: scale(1.02);
+}
+
+/* --- LIEN INSCRIPTION --- */
+
+#lien-inscription {
+    font-size: 12px;
+    color: #a8f0bc;
+    text-align: center;
+}
+
+#lien-inscription a {
+    color: #2bff63;
+    text-decoration: none;
+}
+
+#lien-inscription a:hover {
+    text-decoration: underline;
+}
