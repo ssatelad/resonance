@@ -1,0 +1,12 @@
+{
+  "name": "resonance",
+  "version": "1.0.0",
+  "description": "Application web Resonance",
+  "type": "module",
+  "scripts": {
+    "start": "echo 'Resonance app - open index.html in browser'"
+  },
+  "keywords": ["resonance", "music", "profile"],
+  "author": "",
+  "license": "ISC"
+}
