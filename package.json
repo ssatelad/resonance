@@ -1,12 +1,20 @@
 {
   "name": "resonance",
   "version": "1.0.0",
-  "description": "Application web Resonance",
-  "type": "module",
+  "description": "Reseau social musical Resonance avec Firebase",
+  "private": true,
   "scripts": {
-    "start": "echo 'Resonance app - open index.html in browser'"
+    "serve": "firebase emulators:start",
+    "serve:hosting": "firebase emulators:start --only hosting",
+    "deploy": "firebase deploy",
+    "hosting": "firebase deploy --only hosting",
+    "firestore": "firebase deploy --only firestore",
+    "storage": "firebase deploy --only storage"
   },
-  "keywords": ["resonance", "music", "profile"],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "firebase": "^12.0.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^14.0.0"
+  }
 }

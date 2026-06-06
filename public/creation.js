@@ -13,10 +13,10 @@ onAuthStateChanged(auth, (user) => {
   if (user) window.location.href = "hub.html";
 });
 
-// Créer un profil dans Firestore après inscription
 async function creerProfil(user, pseudo) {
   const ref = doc(db, "users", user.uid);
   const existe = await getDoc(ref);
+
   if (!existe.exists()) {
     await setDoc(ref, {
       uid: user.uid,
@@ -25,15 +25,17 @@ async function creerProfil(user, pseudo) {
       photoURL: user.photoURL || "",
       musiques: [],
       collections: [],
+      reposts: [],
+      identifications: [],
+      likes: [],
       theme: {
         gradient: "160deg, #0a2e14, #0f4d22, #1a7a38"
       },
-      createdAt: new Date()
+      createdAt: Date.now()
     });
   }
 }
 
-// Inscription Email / Mot de passe
 document.getElementById("btn-connexion").addEventListener("click", async () => {
   const pseudo = document.getElementById("pseudo").value.trim();
   const email = document.getElementById("email").value.trim();
@@ -51,7 +53,7 @@ document.getElementById("btn-connexion").addEventListener("click", async () => {
   }
 
   if (mdp.length < 6) {
-    alert("Le mot de passe doit faire au moins 6 caractères.");
+    alert("Le mot de passe doit faire au moins 6 caracteres.");
     return;
   }
 
@@ -64,7 +66,6 @@ document.getElementById("btn-connexion").addEventListener("click", async () => {
   }
 });
 
-// Inscription Google
 document.getElementById("btn-google").addEventListener("click", async () => {
   try {
     const result = await signInWithPopup(auth, provider);
@@ -77,9 +78,11 @@ document.getElementById("btn-google").addEventListener("click", async () => {
 
 function traduireErreur(code) {
   switch (code) {
-    case "auth/email-already-in-use": return "Cet email est déjà utilisé.";
+    case "auth/email-already-in-use": return "Cet email est deja utilise.";
     case "auth/invalid-email": return "Email invalide.";
     case "auth/weak-password": return "Mot de passe trop faible.";
-    default: return "Une erreur est survenue.";
+    case "auth/operation-not-allowed": return "L'inscription email/mot de passe n'est pas activee dans Firebase Authentication.";
+    case "auth/network-request-failed": return "Probleme de connexion reseau. Reessaie dans quelques secondes.";
+    default: return `Une erreur est survenue (${code || "code inconnu"}).`;
   }
 }
