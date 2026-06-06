@@ -902,3 +902,209 @@ button {
     transform: translateX(calc(var(--offset) * 68px)) rotateY(calc(var(--offset) * -22deg)) scale(var(--scale));
   }
 }
+
+/* --- Finition UI profil --- */
+body {
+  background:
+    radial-gradient(circle at 16% 14%, rgba(255, 255, 255, 0.14), transparent 22rem),
+    linear-gradient(120deg, rgba(5, 8, 12, 0.82), rgba(12, 16, 20, 0.54)),
+    linear-gradient(140deg, var(--bg-a), var(--bg-b) 52%, var(--bg-c));
+  background-attachment: fixed;
+}
+
+#barre-gauche {
+  width: 280px;
+  padding: 38px 20px;
+  background: rgba(8, 8, 12, 0.9);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 12px 0 34px rgba(0, 0, 0, 0.2);
+}
+
+#barre-gauche button {
+  min-height: 56px;
+  border-radius: 8px;
+  padding: 0 18px;
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+#contenu {
+  width: min(1240px, calc(100vw - 280px));
+  padding: 42px clamp(28px, 4vw, 72px) 90px;
+}
+
+#entete-profil {
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 34px;
+  align-items: center;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  padding: 28px;
+  background: rgba(6, 8, 13, 0.46);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(12px);
+}
+
+#photo-profil {
+  width: 148px;
+  height: 148px;
+  border: 3px solid rgba(255, 255, 255, 0.72);
+}
+
+#pseudo {
+  max-width: 100%;
+  color: #fff;
+  font-family: "Cinzel", serif;
+  font-size: clamp(36px, 5vw, 58px);
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  text-shadow: 0 8px 26px rgba(0, 0, 0, 0.22);
+}
+
+#stats span {
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#bio {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 17px;
+}
+
+#onglets {
+  margin: 8px 0 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+#onglets button {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+}
+
+#onglets button.active {
+  color: #fff;
+}
+
+#barre-options {
+  align-items: stretch;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(6, 8, 13, 0.34);
+}
+
+#toggle-affichage {
+  gap: 4px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+#toggle-affichage button {
+  min-width: 92px;
+  min-height: 40px;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+#actions-onglet .primary-btn {
+  min-height: 48px;
+}
+
+#zone-musiques {
+  grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
+  gap: 22px;
+}
+
+.post-card,
+.collection-card,
+.repost-card {
+  border-radius: 8px;
+  background: rgba(12, 8, 18, 0.72);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+}
+
+.post-card {
+  padding: 18px;
+}
+
+.post-card:hover,
+.collection-card:hover,
+.repost-card:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+}
+
+.vinyl-shell {
+  max-width: 190px;
+  margin: 0 auto 16px;
+}
+
+.vinyl-disc {
+  width: 100%;
+}
+
+.vinyl-disc::before {
+  inset: 28%;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+.vinyl-disc::after {
+  inset: 48%;
+}
+
+.post-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.post-actions button {
+  flex: 1 1 92px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.primary-btn,
+.ghost-btn,
+.action-btn,
+.mini-btn {
+  min-height: 42px;
+  font-weight: 800;
+}
+
+.ghost-btn {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#actions-profil .ghost-btn,
+#actions-profil .primary-btn {
+  min-height: 44px;
+}
+
+#zone-musiques.liste .post-card,
+#zone-musiques.liste .collection-card,
+#zone-musiques.liste .repost-card {
+  max-width: 900px;
+  background: rgba(12, 8, 18, 0.68);
+}
+
+#zone-musiques.liste .post-actions {
+  display: flex;
+}
+
+@media (max-width: 900px) {
+  #barre-gauche {
+    width: 100%;
+  }
+
+  #contenu {
+    width: 100%;
+  }
+
+  #barre-options {
+    flex-direction: column;
+  }
+}

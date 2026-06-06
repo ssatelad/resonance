@@ -104,6 +104,7 @@ async function loadProfile() {
     return;
   }
   profilData = snap.data();
+  applyProfileTheme(profilData);
 }
 
 function renderProfile() {
@@ -999,11 +1000,34 @@ function applySavedTheme() {
   }
 }
 
+function applyProfileTheme(data) {
+  if (data?.theme?.colors?.length === 3) {
+    applyTheme(data.theme.colors, false);
+    return;
+  }
+
+  if (data?.theme?.gradient) {
+    const colors = extractThemeColors(data.theme.gradient);
+    if (colors) applyTheme(colors, false);
+  }
+}
+
 function applyTheme(colors, persist) {
   document.documentElement.style.setProperty("--bg-a", colors[0]);
   document.documentElement.style.setProperty("--bg-b", colors[1]);
   document.documentElement.style.setProperty("--bg-c", colors[2]);
   if (persist) localStorage.setItem("resonanceTheme", JSON.stringify(colors));
+  if (persist && currentUser) {
+    updateDoc(doc(db, "users", currentUser.uid), {
+      theme: { colors, gradient: `140deg, ${colors.join(", ")}` }
+    }).catch(() => {});
+  }
+}
+
+function extractThemeColors(gradient = "") {
+  const matches = String(gradient).match(/#[0-9a-fA-F]{3,8}/g);
+  if (!matches || matches.length < 2) return null;
+  return [matches[0], matches[1], matches[2] || matches[1]];
 }
 
 function openModal(content) {
