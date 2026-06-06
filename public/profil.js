@@ -1,4 +1,4 @@
-import { auth, db } from "./firebase.js";
+import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
   addDoc,
@@ -9,6 +9,11 @@ import {
   getDocs,
   updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const params = new URLSearchParams(window.location.search);
 const requestedUid = params.get("uid");
@@ -20,6 +25,7 @@ let currentUserData = null;
 let profilData = null;
 let profileUid = null;
 let currentTab = "posts";
+let displayMode = localStorage.getItem("resonanceProfileDisplay") || "grille";
 let collectionAudio = null;
 let collectionProgressTimer = null;
 
@@ -50,6 +56,7 @@ onAuthStateChanged(auth, async (user) => {
   profileUid = requestedUid || user.uid;
   await Promise.all([loadCurrentUser(), loadProfile()]);
   renderProfile();
+  setDisplayMode(displayMode);
   renderTab();
 });
 
@@ -62,6 +69,8 @@ document.addEventListener("click", async (event) => {
   if (id === "profil") window.location.href = `profil.html?uid=${currentUser.uid}`;
   if (id === "musique-fond") openMusicModal();
   if (id === "personnalisation") openThemeModal();
+  if (id === "btn-grille") setDisplayMode("grille");
+  if (id === "btn-liste") setDisplayMode("liste");
 
   if (id?.startsWith("tab-")) {
     const tab = id.replace("tab-", "");
@@ -73,10 +82,13 @@ document.addEventListener("click", async (event) => {
   if (action === "comments") openCommentsModal(actionElement.dataset.type, actionElement.dataset.id);
   if (action === "repost") repostMusic(actionElement.dataset.id);
   if (action === "quote") openQuoteModal(actionElement.dataset.id);
+  if (action === "play-music") playMusicById(actionElement.dataset.id);
   if (action === "play-background") setBackgroundMusic(JSON.parse(decodeURIComponent(actionElement.dataset.music)));
   if (action === "open-collection") openCollectionPlayer(actionElement.dataset.id);
   if (action === "add-music") openAddMusicModal();
   if (action === "add-collection") openAddCollectionModal();
+  if (action === "edit-profile") openEditProfileModal();
+  if (action === "my-profile") window.location.href = `profil.html?uid=${currentUser.uid}`;
   if (action === "logout") logout();
 });
 
@@ -111,9 +123,14 @@ function renderProfile() {
 
   if (isOwner()) {
     actions.insertAdjacentHTML("beforeend", `
+      <button class="ghost-btn" data-action="edit-profile">Modifier le profil</button>
       <button class="primary-btn" data-action="add-music">Ajouter une musique</button>
       <button class="ghost-btn" data-action="add-collection">Nouvelle collection</button>
       <button class="ghost-btn" data-action="logout">Deconnexion</button>
+    `);
+  } else {
+    actions.insertAdjacentHTML("beforeend", `
+      <button class="ghost-btn" data-action="my-profile">Voir mon profil</button>
     `);
   }
 }
@@ -126,11 +143,43 @@ function setActiveTab(id) {
 function renderTab() {
   const zone = document.getElementById("zone-musiques");
   zone.innerHTML = "";
+  renderTabActions();
+  setDisplayMode(displayMode);
 
   if (currentTab === "posts") renderPosts(zone);
   if (currentTab === "collections") renderCollections(zone);
   if (currentTab === "identifications") renderIdentifications(zone);
   if (currentTab === "reposts") renderReposts(zone);
+}
+
+function renderTabActions() {
+  const target = document.getElementById("actions-onglet");
+  if (!target) return;
+
+  target.innerHTML = "";
+  if (!isOwner()) return;
+
+  if (currentTab === "posts") {
+    target.innerHTML = `<button class="primary-btn" data-action="add-music">Ajouter une musique</button>`;
+  }
+
+  if (currentTab === "collections") {
+    target.innerHTML = `<button class="primary-btn" data-action="add-collection">Ajouter une collection</button>`;
+  }
+}
+
+function setDisplayMode(mode) {
+  displayMode = mode === "liste" ? "liste" : "grille";
+  localStorage.setItem("resonanceProfileDisplay", displayMode);
+
+  const zone = document.getElementById("zone-musiques");
+  if (zone) {
+    zone.classList.toggle("liste", displayMode === "liste");
+    zone.classList.toggle("grille", displayMode === "grille");
+  }
+
+  document.getElementById("btn-grille")?.classList.toggle("actif", displayMode === "grille");
+  document.getElementById("btn-liste")?.classList.toggle("actif", displayMode === "liste");
 }
 
 function renderPosts(zone) {
@@ -143,17 +192,20 @@ function renderPosts(zone) {
 
   musiques.forEach((music) => {
     zone.insertAdjacentHTML("beforeend", `
-      <article class="post-card">
+      <article class="post-card" data-action="play-music" data-id="${escapeAttr(music.id)}" title="Cliquer pour ecouter">
         <div class="vinyl-shell">
           <div class="vinyl-disc" style="${vinylStyle(music)}"></div>
         </div>
-        <h3 class="card-title">${escapeHTML(music.title)}</h3>
-        <p class="card-subtitle">${escapeHTML(music.artist)}</p>
-        <p class="card-meta">${escapeHTML(music.sourceName)}</p>
-        <div class="post-actions">
-          <button data-action="comments" data-type="music" data-id="${escapeAttr(music.id)}">Commentaires</button>
-          <button data-action="repost" data-id="${escapeAttr(music.id)}">Repost</button>
-          <button data-action="quote" data-id="${escapeAttr(music.id)}">Citer</button>
+        <div class="post-body">
+          <h3 class="card-title">${escapeHTML(music.title)}</h3>
+          <p class="card-subtitle">${escapeHTML(music.artist)}</p>
+          <p class="card-meta">${escapeHTML(music.sourceName)}</p>
+          <span class="play-chip">Ecouter</span>
+          <div class="post-actions">
+            <button data-action="comments" data-type="music" data-id="${escapeAttr(music.id)}">Commentaires</button>
+            <button data-action="repost" data-id="${escapeAttr(music.id)}">Repost</button>
+            <button data-action="quote" data-id="${escapeAttr(music.id)}">Citer</button>
+          </div>
         </div>
       </article>
     `);
@@ -164,7 +216,7 @@ function renderCollections(zone) {
   const collections = profilData.collections || [];
 
   if (!collections.length) {
-    zone.innerHTML = `<p class="empty-state">Aucune collection pour le moment.</p>`;
+    zone.innerHTML = `<p class="empty-state">Aucune collection pour le moment.${isOwner() ? " Utilise le bouton Ajouter une collection pour commencer." : ""}</p>`;
     return;
   }
 
@@ -176,9 +228,10 @@ function renderCollections(zone) {
         <div class="collection-stack">
           ${covers.map((cover) => `<div class="collection-cover" style="${coverStyle(cover)}"></div>`).join("")}
         </div>
-        <div>
+        <div class="post-body">
           <h3 class="card-title">${escapeHTML(collectionItem.nom || collectionItem.name || "Collection")}</h3>
           <p class="card-subtitle">${(collectionItem.items || []).length} musiques</p>
+          <span class="play-chip">Ouvrir</span>
         </div>
       </article>
     `);
@@ -230,6 +283,54 @@ function renderReposts(zone) {
       </article>
     `);
   });
+}
+
+function playMusicById(musicId) {
+  const music = findMusic(musicId);
+  if (!music) return;
+  playMusic(music);
+}
+
+function playMusic(music) {
+  const oldPlayer = document.getElementById("mini-player");
+  if (oldPlayer) oldPlayer.remove();
+
+  const player = document.createElement("div");
+  player.id = "mini-player";
+
+  if (music.type === "youtube" || music.videoId) {
+    const videoId = music.videoId || getYoutubeId(music.url);
+    if (!videoId) {
+      showToast("Lien YouTube invalide.");
+      return;
+    }
+
+    player.innerHTML = `
+      <div id="player-header">
+        <span>${escapeHTML(music.title)}</span>
+        <button id="fermer-player" type="button">x</button>
+      </div>
+      <iframe height="210"
+        src="https://www.youtube.com/embed/${escapeAttr(videoId)}?autoplay=1"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen></iframe>
+    `;
+  } else if (music.audioUrl) {
+    player.innerHTML = `
+      <div id="player-header">
+        <span>${escapeHTML(music.title)}</span>
+        <button id="fermer-player" type="button">x</button>
+      </div>
+      <audio controls autoplay src="${escapeAttr(music.audioUrl)}"></audio>
+    `;
+  } else {
+    showToast("Cette musique n'a pas encore de lien audio lisible.");
+    return;
+  }
+
+  document.body.appendChild(player);
+  document.getElementById("fermer-player").addEventListener("click", () => player.remove());
 }
 
 async function openCommentsModal(type, targetId) {
@@ -370,7 +471,7 @@ function openCollectionPlayer(collectionId) {
   const collectionItem = (profilData.collections || [])[collectionIndex];
   if (!collectionItem) return;
 
-  const items = (collectionItem.items || []).map(normalizeMusic);
+  const items = (collectionItem.items || []).map((music, index) => normalizeMusic(music, index));
   let activeIndex = 0;
 
   openModal(`
@@ -415,7 +516,15 @@ function openCollectionPlayer(collectionId) {
   });
 
   document.getElementById("collection-play").addEventListener("click", () => {
-    if (!items.length || !items[activeIndex].audioUrl) return;
+    if (!items.length) return;
+    if (items[activeIndex].type === "youtube" || items[activeIndex].videoId) {
+      playMusic(items[activeIndex]);
+      return;
+    }
+    if (!items[activeIndex].audioUrl) {
+      showToast("Cette musique n'a pas de lien audio lisible.");
+      return;
+    }
     if (collectionAudio.paused) playCollectionAudio();
     else pauseCollectionAudio();
   });
@@ -472,6 +581,7 @@ function updateCollectionTrack(items, activeIndex, autoplay) {
   artist.textContent = track.artist;
   collectionAudio.src = track.audioUrl || "";
   progress.value = 0;
+  progress.disabled = !track.audioUrl;
 
   collectionAudio.onloadedmetadata = () => {
     progress.max = collectionAudio.duration || 0;
@@ -481,7 +591,8 @@ function updateCollectionTrack(items, activeIndex, autoplay) {
     document.getElementById("collection-next")?.click();
   };
 
-  if (autoplay && track.audioUrl) playCollectionAudio();
+  if (autoplay && (track.type === "youtube" || track.videoId)) playMusic(track);
+  else if (autoplay && track.audioUrl) playCollectionAudio();
   else pauseCollectionAudio();
 }
 
@@ -523,6 +634,62 @@ function openAddMusicToCollectionModal(collectionIndex) {
   });
 }
 
+function openEditProfileModal() {
+  openModal(`
+    <section class="modal-panel compact">
+      <div class="modal-head">
+        <h2>Modifier le profil</h2>
+        <button class="close-btn" data-close-modal>x</button>
+      </div>
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="field">
+            <label for="profile-pseudo">Pseudo</label>
+            <input id="profile-pseudo" value="${escapeAttr(profilData.pseudo || "")}">
+          </div>
+          <div class="field">
+            <label for="profile-bio">Bio</label>
+            <textarea id="profile-bio">${escapeHTML(profilData.bio || "")}</textarea>
+          </div>
+          <div class="field">
+            <label for="profile-photo-url">Photo de profil URL</label>
+            <input id="profile-photo-url" placeholder="https://...">
+          </div>
+          <div class="field">
+            <label for="profile-photo-file">Photo de profil fichier</label>
+            <input id="profile-photo-file" type="file" accept="image/*">
+          </div>
+          <button class="primary-btn" type="submit">Enregistrer</button>
+        </form>
+      </div>
+    </section>
+  `);
+
+  document.getElementById("profile-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const updates = {
+      pseudo: document.getElementById("profile-pseudo").value.trim() || "Sans pseudo",
+      bio: document.getElementById("profile-bio").value.trim()
+    };
+    const photoUrl = document.getElementById("profile-photo-url").value.trim();
+    const photoFile = document.getElementById("profile-photo-file").files[0];
+
+    if (photoFile) {
+      const storageRef = ref(storage, `photos/${currentUser.uid}`);
+      await uploadBytes(storageRef, photoFile);
+      updates.photoURL = await getDownloadURL(storageRef);
+    } else if (photoUrl) {
+      updates.photoURL = photoUrl;
+    }
+
+    await updateDoc(doc(db, "users", currentUser.uid), updates);
+    await loadProfile();
+    renderProfile();
+    renderTab();
+    closeModal();
+  });
+}
+
 function openAddMusicModal() {
   openMusicForm("Ajouter une musique", async (music) => {
     await updateDoc(doc(db, "users", currentUser.uid), {
@@ -546,24 +713,28 @@ function openMusicForm(title, onSubmit) {
       <div class="modal-body">
         <form id="music-form">
           <div class="field">
+            <label for="music-youtube">Lien YouTube</label>
+            <input id="music-youtube" placeholder="https://youtube.com/watch?v=...">
+          </div>
+          <div class="field">
+            <label for="music-file">Fichier audio</label>
+            <input id="music-file" type="file" accept="audio/*,video/mp4">
+          </div>
+          <div class="field">
             <label for="music-title">Titre</label>
-            <input id="music-title" required placeholder="Instant Crush">
+            <input id="music-title" placeholder="Instant Crush">
           </div>
           <div class="field">
             <label for="music-artist">Artiste</label>
-            <input id="music-artist" required placeholder="Daft Punk">
+            <input id="music-artist" placeholder="Daft Punk">
           </div>
           <div class="field">
             <label for="music-cover">Image de couverture</label>
             <input id="music-cover" placeholder="https://...">
           </div>
           <div class="field">
-            <label for="music-audio">Lien audio mp3</label>
+            <label for="music-audio">Lien MP3 direct</label>
             <input id="music-audio" placeholder="https://...mp3">
-          </div>
-          <div class="field">
-            <label for="music-link">Lien externe</label>
-            <input id="music-link" placeholder="YouTube, Spotify, SoundCloud...">
           </div>
           <button class="primary-btn" type="submit">Enregistrer</button>
         </form>
@@ -573,15 +744,51 @@ function openMusicForm(title, onSubmit) {
 
   document.getElementById("music-form").addEventListener("submit", async (event) => {
     event.preventDefault();
+    const youtubeUrl = document.getElementById("music-youtube").value.trim();
+    const file = document.getElementById("music-file").files[0];
+    const audioLink = document.getElementById("music-audio").value.trim();
+    const titleValue = document.getElementById("music-title").value.trim();
+    const artistValue = document.getElementById("music-artist").value.trim();
+    const coverValue = document.getElementById("music-cover").value.trim();
+
+    if (!youtubeUrl && !file && !audioLink) {
+      showToast("Ajoute un lien YouTube, un fichier audio ou un lien MP3.");
+      return;
+    }
+
     const music = {
       id: `music-${Date.now()}`,
-      titre: document.getElementById("music-title").value.trim(),
-      artiste: document.getElementById("music-artist").value.trim(),
-      thumbnail: document.getElementById("music-cover").value.trim(),
-      source: document.getElementById("music-audio").value.trim(),
-      lien: document.getElementById("music-link").value.trim(),
+      titre: titleValue || "Musique sans titre",
+      artiste: artistValue || "Artiste inconnu",
+      thumbnail: coverValue,
       createdAt: Date.now()
     };
+
+    if (youtubeUrl) {
+      const videoId = getYoutubeId(youtubeUrl);
+      if (!videoId) {
+        showToast("Lien YouTube invalide.");
+        return;
+      }
+
+      music.type = "youtube";
+      music.url = youtubeUrl;
+      music.videoId = videoId;
+      music.thumbnail = coverValue || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      if (!titleValue) music.titre = "Musique YouTube";
+    } else if (file) {
+      const storageRef = ref(storage, `musiques/${currentUser.uid}/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      music.type = "fichier";
+      music.source = await getDownloadURL(storageRef);
+      music.thumbnail = coverValue || "https://via.placeholder.com/600/061a0d/2bff63?text=Music";
+      if (!titleValue) music.titre = file.name.replace(/\.[^/.]+$/, "");
+    } else {
+      music.type = "fichier";
+      music.source = audioLink;
+      music.thumbnail = coverValue || "https://via.placeholder.com/600/061a0d/2bff63?text=Music";
+    }
+
     await onSubmit(music);
   });
 }
@@ -658,7 +865,7 @@ async function openMusicModal() {
   const select = document.getElementById("profile-select");
   const renderList = () => {
     const profile = profiles.find((item) => item.id === select.value);
-    const musics = (profile?.musiques || []).map(normalizeMusic);
+    const musics = (profile?.musiques || []).map((music, index) => normalizeMusic(music, index));
     const list = document.getElementById("background-music-list");
 
     if (!musics.length) {
@@ -838,13 +1045,14 @@ async function logout() {
 }
 
 function getProfileMusics() {
-  return (profilData.musiques || []).map(normalizeMusic);
+  return (profilData.musiques || []).map((music, index) => normalizeMusic(music, index));
 }
 
 function normalizeMusic(music, index = 0) {
   const title = music.titre || music.title || music.nom || "Titre inconnu";
   const artist = music.artiste || music.artist || music.name || "Artiste inconnu";
-  const audioUrl = music.source || music.audioUrl || music.audioURL || music.url || "";
+  const url = music.url || music.lien || music.link || "";
+  const audioUrl = music.source || music.audioUrl || music.audioURL || (music.type === "youtube" ? "" : url);
   const thumbnail = music.thumbnail || music.cover || music.image || "";
 
   return {
@@ -852,9 +1060,12 @@ function normalizeMusic(music, index = 0) {
     id: music.id || slug(`${title}-${artist}-${index}`),
     title,
     artist,
+    url,
     audioUrl,
     thumbnail,
-    sourceName: music.sourceName || music.platform || music.lien || "Musique"
+    type: music.type || (isYoutubeUrl(url) ? "youtube" : "fichier"),
+    videoId: music.videoId || getYoutubeId(url),
+    sourceName: music.sourceName || music.platform || (isYoutubeUrl(url) ? "YouTube" : "Musique")
   };
 }
 
@@ -867,7 +1078,7 @@ function getCollectionId(collectionItem, index) {
 }
 
 function getCollectionCovers(collectionItem) {
-  const items = (collectionItem.items || []).map(normalizeMusic);
+  const items = (collectionItem.items || []).map((music, index) => normalizeMusic(music, index));
   const covers = items.map((item) => item.thumbnail).filter(Boolean).slice(0, 3);
   while (covers.length < 3) covers.push(fallbackCovers[covers.length]);
   return covers;
@@ -889,6 +1100,15 @@ function colorFromString(value) {
   for (let i = 0; i < value.length; i += 1) hash = value.charCodeAt(i) + ((hash << 5) - hash);
   const hue = Math.abs(hash) % 360;
   return `hsl(${hue}, 78%, 58%)`;
+}
+
+function getYoutubeId(url = "") {
+  const match = String(url).match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
+function isYoutubeUrl(url = "") {
+  return Boolean(getYoutubeId(url));
 }
 
 function slug(value) {
