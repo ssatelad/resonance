@@ -72,7 +72,7 @@ document.getElementById("btn-google").addEventListener("click", async () => {
     await creerProfil(result.user, result.user.displayName);
     window.location.href = "hub.html";
   } catch (err) {
-    alert("Erreur Google : " + err.message);
+    alert("Erreur Google : " + traduireErreur(err.code));
   }
 });
 
@@ -82,6 +82,8 @@ function traduireErreur(code) {
     case "auth/invalid-email": return "Email invalide.";
     case "auth/weak-password": return "Mot de passe trop faible.";
     case "auth/operation-not-allowed": return "L'inscription email/mot de passe n'est pas activee dans Firebase Authentication.";
+    case "auth/unauthorized-domain": return "Ce domaine n'est pas autorise dans Firebase Authentication. Ajoute ssatelad.github.io dans Authentication > Settings > Authorized domains.";
+    case "auth/popup-closed-by-user": return "La fenetre Google a ete fermee avant la fin de la connexion.";
     case "auth/network-request-failed": return "Probleme de connexion reseau. Reessaie dans quelques secondes.";
     default: return `Une erreur est survenue (${code || "code inconnu"}).`;
   }

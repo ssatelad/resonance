@@ -61,7 +61,7 @@ document.getElementById("btn-google").addEventListener("click", async () => {
     await creerProfilSiAbsent(result.user);
     window.location.href = "hub.html";
   } catch (err) {
-    alert("Erreur Google : " + err.message);
+    alert("Erreur Google : " + traduireErreur(err.code));
   }
 });
 
@@ -75,6 +75,8 @@ function traduireErreur(code) {
     case "auth/invalid-email": return "Email invalide.";
     case "auth/missing-password": return "Entre ton mot de passe.";
     case "auth/operation-not-allowed": return "La connexion email/mot de passe n'est pas activee dans Firebase Authentication.";
+    case "auth/unauthorized-domain": return "Ce domaine n'est pas autorise dans Firebase Authentication. Ajoute ssatelad.github.io dans Authentication > Settings > Authorized domains.";
+    case "auth/popup-closed-by-user": return "La fenetre Google a ete fermee avant la fin de la connexion.";
     case "auth/too-many-requests": return "Trop de tentatives. Reessaie plus tard.";
     case "auth/network-request-failed": return "Probleme de connexion reseau. Reessaie dans quelques secondes.";
     default: return `Une erreur est survenue (${code || "code inconnu"}).`;
